@@ -1,3 +1,16 @@
+--     _                     _         
+--    / \   _ __   __ _  ___| |    ____
+--   / _ \ | '_ \ / _` |/ _ \ |   |_  /
+--  / ___ \| | | | (_| |  __/ |___ / / 
+-- /_/   \_\_| |_|\__, |\___|_____/___|
+--                 |___/                
+
+-- Refinery Caves 1.0.1 
+-- Created by AngeLz, Ran with the WhopperHub
+-- We are not responsible for any bans that may occur from using this script.
+-- Making your life easier by giving you the scripts for free!
+-- DO NOT REUPLOAD THIS SCRIPT OR CLAIM IT AS YOUR OWN
+
 return function()
     if not _G.sf then
         print("Don't run directly")
@@ -144,7 +157,7 @@ return function()
                 game:GetService("ReplicatedStorage").Events.Grab:InvokeServer(v.Part,{})
                 task.wait(0.1)
                 v:FindFirstChild("Part").CFrame = CFrame.new(143, 83, 1105)
-                task.wait(1)
+                task.wait(1.5)
             end
         end
         task.wait(0.1)
@@ -286,6 +299,74 @@ return function()
             time = value/100
         end
     )
+    misc:Button(
+        "No Damage",
+        function()
+            local events = {
+                Fire = true,
+                Invoke = true,
+                FireServer = true,
+                InvokeServer = true
+            }
+
+            local gmeta = getrawmetatable(game)
+            setreadonly(gmeta, false)
+            local psuedoEnv = {
+                ["__index"] = gmeta.__index,
+                ["__namecall"] = gmeta.__namecall
+            }
+            gmeta.__index, gmeta.__namecall =
+            newcclosure(
+                function(self, index, ...)
+                    if events[index] then
+                        if "DamageMe" == self.Name and not checkcaller() then
+                            return nil
+                        end
+                    end
+                    return psuedoEnv.__index(self, index, ...)
+                end
+            )
+            setreadonly(gmeta, true)
+        end
+    )
+    misc:Button(
+        "No Blur",
+        function()
+            game:GetService("Lighting").WaterBlur:Destroy()
+            game:GetService("Lighting").Blur:Destroy()
+            DiscordLib:Notification("No Blur", "No Blur has been enabled", "Okay")
+        end
+    )
+    misc:Toggle(
+        "No Shadows",
+        false,
+        function(t)
+            if t then 
+                DiscordLib:Notification("No Shadows", "No Shadows has been enabled", "Okay")
+            else
+                DiscordLib:Notification("No Shadows", "No Shadows has been disabled", "Okay")
+            end
+            game:GetService("Lighting").Shadows = t
+        end
+    )
+    -- places a light on the players head
+    misc:Toggle(
+        "Head Light",
+        false,
+        function(t)
+            if t then
+                local light = Instance.new("PointLight")
+                light.Parent = game.Players.LocalPlayer.Character.Head
+                light.Range = 100
+                light.Brightness = 1
+                light.Color = Color3.fromRGB(255, 255, 255)
+                DiscordLib:Notification("Head Light", "Head Light has been enabled", "Okay")
+            else
+                game.Players.LocalPlayer.Character.Head.PointLight:Destroy()
+                DiscordLib:Notification("Head Light", "Head Light has been disabled", "Okay")
+            end
+        end
+    )
     coroutine.wrap(
         function()
             while true do
@@ -323,24 +404,6 @@ return function()
         )
     end
     checkF()
-    -- checks if a player presses the G key
-    local function checkG()
-        local plr = game.Players.LocalPlayer
-        local mouse = plr:GetMouse()
-        mouse.KeyDown:Connect(
-            function(key)
-                if key == "g" then
-                    for r, i in next, game:GetService("Workspace").Grabable:GetDescendants() do
-                        if i.Name == "Grab" then
-                            if i:FindFirstChild("Plr") then
-                                i.Parent.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-                            end
-                        end
-                    end
-                end
-            end
-        )
-    end
     local function checkH()
         local plr = game.Players.LocalPlayer
         local mouse = plr:GetMouse()
@@ -350,7 +413,17 @@ return function()
                     for r, i in next, game:GetService("Workspace").Grabable:GetDescendants() do
                         if i.Name == "Grab" then
                             if i:FindFirstChild("Plr") then
-                                i.Parent.CFrame = CFrame.new(-455,5.75,-57.7)
+                                v.Part.CFrame = CFrame.new(math.random(404, 436)*-1, 8, math.random(67,85)*-1)
+                                task.wait(1)
+                                workspace.Map.Sellary.Keeper.IPart.Interact:FireServer()
+                                task.wait(1)
+                                for i, v in pairs(
+                                    getconnections(
+                                        game:GetService("Players").LocalPlayer.PlayerGui.UserGui.Dialog:WaitForChild("Yes").MouseButton1Click
+                                    )
+                                ) do
+                                    v:Fire()
+                                end
                             end
                         end
                     end
@@ -359,67 +432,101 @@ return function()
         )
     end
     checkH()
-    checkG()
     -- -- Auto farm scripts
-    -- local onTp = false
-    -- coroutine.wrap(function()
-    --     while true do 
-    --         if onTp then
-    --             getTrusty(true)                
-    --             task.wait(10)
-    --             -- moves the trusty pickaxe to the plot
-    --             for _, v in next, game:GetService("Workspace").Plots:GetChildren() do
-    --                 if v.Owner.Value == game.Players.LocalPlayer then
-    --                     -- places player on the trusty pickaxe
-    --                     for i, v in next, game:GetService("Workspace").Grabable:GetChildren() do
-    --                         if v:FindFirstChild("Owner") and v:FindFirstChild("Configuration") and v.Configuration:FindFirstChild("Data") 
-    --                         and v.Configuration.Data:FindFirstChild("MatInd") and v.Configuration.Data:FindFirstChild("Size") then
-    --                             if v.Owner.Value == game.Players.LocalPlayer then
-    --                                 if v.Configuration.Data.MatInd.Value == 1 then
-    --                                     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Part.CFrame
-    --                                     task.wait(timeout)
-    --                                     v.Part.CFrame = l.Base.CFrame + Vector3.new(0, 25, 0)
-    --                                 end
-    --                             end
-    --                         end
-    --                     end
-    --                     for i,v in next, game:GetService("Workspace").Grabable:GetChildren() do
-    --                         if v.Name == "Trusty Pickaxe" and v:FindFirstChild("Part") and v:FindFirstChild("Owner") then
-    --                             for t, b in next, game:GetService("Workspace").Plots:GetChildren() do
-    --                                 if b.Owner.Value == game.Players.LocalPlayer then
-    --                                     if v.Owner.Value == game.Players.LocalPlayer then
-    --                                         v.Part.CFrame = v.Base.CFrame + Vector3.new(0, 25, 0)
-    --                                     end
-    --                                 end
-    --                             end
-    --                         end
-    --                     end
-    --                 end
-    --             end
+    -- makes a loop that runs every 0.1 seconds as long as "Auto Farm" is true
+    local autoFarmf = false
+    task.spawn(
+        function()
+            local sell = {
+                "ArCobble",
+                "WoodPlank2",
+                "WoodPlank"
+            }
+            while true do
+                if autoFarmf then
+                    pcall(function()
+                        for i, v in pairs(workspace.Grabable:GetChildren()) do
+                            if v:FindFirstChild("Part") and v.Part:FindFirstChild("Info") then
+                                if table.find(sell, v.Part.Info.Value) then
+                                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v.Part.Position)
+                                    task.wait()
+                                    game:GetService("ReplicatedStorage").Events.Grab:InvokeServer(v:FindFirstChild("Part"), {})
+                                    v:FindFirstChild("Part").Position = game:GetService("Workspace").Map.Sellary.Counter.Counter.Position + Vector3.new(math.random(1,5), math.random(1,5), math.random(1,5))
+                                end
+                            end
+                        end
+                        task.wait(1)
+                        workspace.Map.Sellary.Keeper.IPart.Interact:FireServer()
+                        task.wait(0.5)
+                        local btn = game:GetService("Players").LocalPlayer.PlayerGui.UserGui.Dialog:WaitForChild("Yes")
+                        btn.Active = true
+                        btn.Modal = true
+                        firesignal(btn.MouseButton1Click)
+                    end)
+                end
+                task.wait(5)
+            end  
+        end
+    )
+    local autoFarmD = false
+    task.spawn(
+        function()
+        end
+    )
+    local mts = true
+    task.spawn(
+        function()
+            while true do 
+                task.wait()
+                if mts then
+                    local function conv(int)
+                        return tostring(int):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
+                    end
+                    game:GetService("Players").LocalPlayer.PlayerGui.UserGui.Stats.Cash.Text = "$"..conv(game:GetService("Players").LocalPlayer.Values.Saveable.Cash.Value)
+                else
+                    game:GetService("Players").LocalPlayer.PlayerGui.UserGui.Stats.Cash.Text = "$"..require(game.ReplicatedStorage.Modules.Shortcut).Cash(game.Players.LocalPlayer.Values.Saveable.Cash.Value);
+                end
+            end
+        end
+    )
+    -- checks if the user presses the "Auto Farm" button
+    afarm:Toggle(
+        "Auto Farm Wood",
+        false,
+        function(t)
+            if t then
+                autoFarmf = true
+                DiscordLib:Notification("Auto Farm Wood", "Auto Farming Wood has been enabled", "Okay")
+            else
+                autoFarmf = false
+                DiscordLib:Notification("Auto Farm Wood", "Auto Farming Wood has been disabled", "Okay")
+            end
+        end
+    )
+    afarm:Seperator()
+    afarm:Label("Soon more will be added...")
+    -- afarm:Toggle(
+        --     "Auto Farm Delivery Box",
+        --     false,
+        --     function(t)
+    --         if t then
+    --             autoFarmD = true
+    --             DiscordLib:Notification("Auto Farm Delivery Box", "Auto Farming Delivery Box has been enabled", "Okay")
+    --         else
+    --             autoFarmD = false
+    --             DiscordLib:Notification("Auto Farm Delivery Box", "Auto Farming Delivery Box has been disabled", "Okay")
     --         end
-    --         task.wait(10)
     --     end
-    -- end)()
-    -- -- spawn car that player is in
-    -- local function spawnCarStand()
-    -- end
-    -- -- auto farm neon car that player is standing on top of
-    -- local onNc = false
-    -- coroutine.wrap(function()
-    --     while true do
-    --         if onNc then
-    --             for i, v in next, game:GetService("Workspace").Vehicles:GetChildren() do
-    --                 if v:FindFirstChild("Owner") and v:FindFirstChild("Configuration") and v.Configuration:FindFirstChild("Data") 
-    --                 and v.Configuration.Data:FindFirstChild("MatInd") and v.Configuration.Data:FindFirstChild("Size") then
-    --                 end
-    --             end
-    --         end
-    --         task.wait(1)
-    --     end
-    -- end)()
-    -- game:GetService("Workspace").Vehicles
-    afarm:Label("This is a work in progress")
-    afarm:Label("Current Build Doesn't Support Auto Farm")
+    -- )
+    misc:Toggle("Show Full Money", true, function(t)
+        if t then
+            mts = true
+            DiscordLib:Notification("Show Full Money", "Showing full money has been enabled", "Okay")
+        else
+            mts = false
+            DiscordLib:Notification("Show Full Money", "Showing full money has been disabled", "Okay")
+        end
+    end)
     -- afarm:Toggle("Trusty Pickaxe", false,function(on)
     --     onTp = on
     -- end)
@@ -428,6 +535,19 @@ return function()
     -- end)
     main:Label("Hotkeys")
     main:Label("F - Teleport ores to plot")
-    main:Label("G - Teleport ores to you")
     main:Label("H - Teleport ores to sell")    
+    -- changelog
+    local changelog = serv:Channel("Changelog")
+    changelog:Label("Update 1.0.0 - 10/24/2022")
+    changelog:Label("- Initial Release")
+    changelog:Label("")
+    changelog:Label("Update 1.0.1 - 10/25/2022")
+    changelog:Label("- Added Changelog")
+    changelog:Label("- Added No Damage")
+    changelog:Label("- Added No Shadows")
+    changelog:Label("- Added Head Light (Alternative to Always day)")
+    changelog:Label("- Added No Blur")
+    changelog:Label("- Added Auto Farm Wood")
+    changelog:Label("- Added Show Full Money")
+    changelog:Label("- Slowed Down Give Trusty Interval")
 end
