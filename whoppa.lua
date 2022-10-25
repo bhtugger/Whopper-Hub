@@ -5,7 +5,7 @@ _G.sf = DiscordLib:Window("Whopper Hub")
 
 local win = _G.sf
 
-local serverUrl =  "http://https://raw.githubusercontent.com/AngeLz79/Whopper-Hub/main/"
+local serverUrl =  "https://raw.githubusercontent.com/AngeLz79/Whopper-Hub/main/"
 
 coroutine.wrap(function()    
     local id = game.PlaceId
