@@ -71,6 +71,22 @@ main:Button(
     end
 )
 main:Button(
+    "CMD-X",
+    function()
+        local co = coroutine.wrap(
+            function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Source",true))()
+            end
+        )
+        local status, err = pcall(co)
+        if not status then
+            DiscordLib:Notification("Error While Starting CMD-X", err, "Okay!")
+        else
+            DiscordLib:Notification("Notification", "Started CMD-X", "Okay!")
+        end
+    end
+)
+main:Button(
     "Copy Discord Link",
     function()
         setclipboard("https://discord.gg/2hwgsF2qaW")
